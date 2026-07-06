@@ -42,10 +42,10 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "mysql" {
-  for_each = var.create_database ? toset(var.allowed_security_group_ids) : toset([])
+  count = var.create_database ? length(var.allowed_security_group_ids) : 0
 
   security_group_id            = aws_security_group.this[0].id
-  referenced_security_group_id = each.value
+  referenced_security_group_id = var.allowed_security_group_ids[count.index]
 
   description = "Allow MySQL from an approved application security group"
   ip_protocol = "tcp"
